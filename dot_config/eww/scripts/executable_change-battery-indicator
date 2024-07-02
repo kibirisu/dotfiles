@@ -1,0 +1,52 @@
+#!/bin/sh
+
+bat="$(cat /sys/class/power_supply/BAT0/capacity)"
+stat="$(cat /sys/class/power_supply/BAT0/status)"
+
+if [[ $bat -lt 14 ]]; then
+  if [[ "$stat" = "Charging" ]]; then
+    echo "battery_charging_full"
+  else
+    echo "battery_0_bar"
+  fi
+elif [[ $bat -lt 28 ]]; then
+  if [[ "$stat" = "Charging" ]]; then
+    echo "battery_charging_20"
+  else
+    eww update warning="low"
+    echo "battery_1_bar"
+  fi
+elif [[ $bat -lt 42 ]]; then
+  if [[ "$stat" = "Charging" ]]; then
+    eww update warning=""
+    echo "battery_charging_30"
+  else
+    echo "battery_2_bar"
+  fi
+elif [[ $bat -lt 57 ]]; then
+  if [[ "$stat" = "Charging" ]]; then
+    echo "battery_charging_50"
+  else
+    echo "battery_3_bar"
+  fi
+elif [[ $bat -lt 71 ]]; then
+  if [[ "$stat" = "Charging" ]]; then
+    echo "battery_charging_60"
+  else
+    echo "battery_4_bar"
+  fi
+elif [[ $bat -lt 85 ]]; then
+  if [[ "$stat" = "Charging" ]]; then
+    echo "battery_charging_80"
+  else
+    echo "battery_5_bar"
+  fi
+elif [[ $bat -lt 100 ]]; then
+  if [[ "$stat" = "Charging" ]]; then
+    echo "battery_charging_90"
+  else
+    echo "battery_6_bar"
+  fi
+elif [[ $bat -eq 100 ]]; then
+  echo "battery_full"
+fi

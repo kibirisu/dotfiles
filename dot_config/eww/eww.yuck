@@ -1,0 +1,272 @@
+(defwidget bar_widget []
+  (centerbox
+    :class "top-bar"
+    (workspaces)
+    (center)
+    (control)
+  )
+)
+
+(defwidget center []
+  (box
+    :space-evenly false
+    :spacing {player != "" ? 4 : 0}
+    :halign "center"
+    (eventbox
+      ;; :class "widget"
+      ;; :onhoverlost "${EWW} open --toggle bg && ${EWW} open --toggle calendar"
+      :onhoverlost "eww open-many --toggle bg calendar "
+      (box
+        :class "widget"
+        ;; :style "padding: 0px 10px; margin: 5px 0px 5px 70px"
+        ;; :style {player != "" ? "padding: 0px 10px; margin: 5px 0px 5px 70px" : "padding: 0px 10px; margin: 5px 70px 5px 70px"}
+        :style "padding: 0px 10px; margin: 5px 0px 5px 0px"
+        :space-evenly false
+        :spacing 9
+        (eventbox
+          :onhover "eww update clock_hover=true"
+          :onhoverlost "eww update clock_hover=false"
+          (box
+            :space-evenly false
+            :spacing 4
+            (label
+              :class "material"
+              :style "font-size: 23px"
+              :text "schedule"
+              )
+            (label
+              :text time
+            :style "font-size: 22px"
+            )
+            (revealer
+              :reveal clock_hover
+              :transition "slideleft"
+              (label
+                :text date
+                :style "font-size: 20px"
+              )
+            )
+          )
+        )
+        (box
+          :space-evenly false
+          :spacing 4
+          (label
+            :class "material"
+            :style "font-size: 24px"
+            ;;:text "notifications"
+            :text "${notif_icon}"
+          )
+          (label
+            :text "${notif}"
+            :style "font-size: 20px"
+          )
+        )
+      )
+    )
+    (player_widget)
+  )
+)
+
+(defwidget player_widget []
+  (eventbox
+    (revealer 
+      :reveal {player != ""}
+      :transition "slideleft"
+      :duration "400ms"
+      (box
+        :space-evenly false
+        :class {player != "" ? "widget" : "fade"}
+        :style "margin: 5px 0px"
+        (label
+          :class "material"
+          :style "font-size: 25px; padding: 0px 0px 0px 10px"
+          :text "play_arrow"
+        )
+        (label
+          :class "player-label"
+          :text {strlength(player) < 38 ? player : "${substring(player, 0, 30)}..."}
+        )
+      )
+    )
+  )
+)
+
+(defvar clock_hover false)
+
+(deflisten player
+  :initial ""
+  "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true"
+)
+
+(deflisten workspaces
+  :initial "[]"
+  "bash ~/.config/eww/scripts/get-workspaces"
+)
+
+(deflisten current_workspace
+  :initial "1"
+  "bash ~/.config/eww/scripts/get-active-workspace"
+)
+
+(defwidget workspaces []
+  (eventbox
+    :onscroll "bash ~/.config/eww/scripts/change-active-workspace {} ${current_workspace}"
+    ;; :class "widget"
+    :halign "start"
+    (box
+      :class "widget"
+      :style "margin: 5px 6px"
+      (for workspace in workspaces
+        (eventbox
+          :onclick "hyprctl dispatch workspace ${workspace.id}"
+          :cursor {workspace.id != current_workspace ? "pointer" : "default"}
+          (label
+            :class "workspace-label ${workspace.id == current_workspace ? "current" : ""}"
+            :text "${workspace.id}"
+          )
+        )
+      )
+    )
+  )
+)
+
+(defwidget control []
+  (eventbox
+    :halign "end"
+    (box
+      :class "widget"
+      :style "margin: 5px 6px"
+      :space-evenly false
+      ;;(systray :icon-size 24 :style "color: #514d52; background-color: #514d52")
+      (systray :icon-size 24)
+      (label
+        :class "material control-label ${warning}"
+        :style "font-size: 21px; padding: 0px 0px 0px 0px"
+        :text "${battery}"
+      )
+      (label
+        :class "control-label"
+        :style "padding: 0px 10px 0px 0px; font-size: 18px"
+        :text "${EWW_BATTERY["BAT0"].capacity}%"
+      )
+    )
+  )
+)
+
+(defwidget ontrol []
+  (eventbox
+    :halign "end"
+    (box
+      :class "widget"
+      :style "margin: 5px 6px"
+      :space-evenly false
+      (label
+        :class "material control-label"
+        :style "font-size: 25px; padding: 0px 0px 0px 10px"
+        ;;:text "${wifi}${bluetooth}${bedtime}${battery}"
+      )
+      (label
+        :class "control-label"
+        :style "padding: 0px 10px 0px 0px; font-size: 18px"
+        :text "${EWW_BATTERY["BAT0"].capacity}%"
+      )
+    )
+  )
+)
+
+(defwidget calendar_widget []
+  (calendar)
+)
+
+(defpoll date
+  :interval
+  "1s" "date '+%d.%m.%Y'"
+)
+
+(defpoll time
+  :interval
+  "1s" "date '+%H:%M'"
+)
+
+(defpoll notif
+  :interval "1s"
+  "swaync-client -c"
+)
+
+(defpoll notif_icon
+  :interval "1s"
+  "~/.config/eww/scripts/change-notification-icon"
+)
+
+(defpoll battery
+  :interval "1s"
+  "~/.config/eww/scripts/change-battery-indicator"
+)
+
+(defvar warning "")
+
+;;(defpoll wifi
+;;  :interval "1s"
+;;  "~/.config/eww/scripts/change-wifi-indicator"
+;;)
+
+;;(defpoll bluetooth
+;;  :interval "1s"
+;; "~/.config/eww/scripts/change-bluetooth-indicator"
+;;)
+
+(defpoll bedtime
+  :interval "2s"
+  "~/.config/eww/scripts/change-night-light-indicator"
+)
+
+(defwindow bar
+  :monitor 0
+  :exclusive true
+  :stacking "bottom"
+  :namespace "gtk-layer-shell"
+  :geometry 
+  (geometry
+    :x "0px"
+    :y "0px"
+    :width "100%"
+    :height "42px"
+    :anchor "top center"
+  )
+  (eventbox :onclick "sleep 0.1 && eww close calendar && eww close bg"
+   (bar_widget)
+  )
+)
+
+(defwindow bg
+  :monitor 0
+  :stacking "fg"
+  ;;:namespace "gtk-layer-shell"
+  :namespace "shell"
+  :geometry
+  (geometry
+    ;; :x "0px"
+    ;; :y "0px"
+    :width "100%"
+    :height "100%"
+    ;; :anchor "top center"
+  )
+  (eventbox :onclick "eww close calendar && eww close bg")
+)
+
+(defwindow calendar
+  :monitor 0
+  :stacking "fg"
+  :namespace "calendar"
+  :geometry
+  (geometry
+    :x "0px"
+    :y "100px"
+    :width "24%"
+    :height "230px"
+    :anchor "top center"
+  )
+  (calendar_widget)
+)
+

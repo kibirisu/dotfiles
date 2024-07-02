@@ -1,0 +1,15 @@
+#!/bin/sh
+
+bt="$(rfkill | awk '$2 == "bluetooth" {print $4}')"
+
+if [[ "$bt" = "unblocked" ]]; then
+  if [[ ! -z `bluetoothctl devices Connected` ]]; then
+    echo "bluetooth_connected"
+  elif [[ "$(bluetoothctl show | awk '$1 == "Discovering:" {print $2}')" = "yes" ]]; then
+    echo "bluetooth_searching"
+  else
+    echo "bluetooth"
+  fi
+else
+  echo "bluetooth_disabled"
+fi

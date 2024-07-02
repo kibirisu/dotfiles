@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [[ $(swaync-client -D) = true ]]; then
+  echo "notifications_off"
+else
+  if [[ $(swaync-client -c) -gt 0 ]]; then
+    echo "notifications_active"
+  else
+    echo "notifications"
+  fi
+fi

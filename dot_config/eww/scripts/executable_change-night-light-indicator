@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [[ "$(hyprshade current)" = "blue-light-filter" ]]; then
+  echo "bedtime"
+fi

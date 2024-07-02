@@ -1,0 +1,19 @@
+#!/bin/sh
+
+sig="$(cat /proc/net/wireless | awk '$1 == "wlan0:" {sub(/\./,"",$4); print $4}')"
+
+if [[ $sig -lt -80 ]]; then
+  echo "signal_wifi_0_bar"
+elif [[ $sig -lt -75 ]]; then
+  echo "network_wifi_1_bar"
+elif [[ $sig -lt -70 ]]; then
+  echo "network_wifi_2_bar"
+elif [[ $sig -lt -60 ]]; then
+  echo "network_wifi_3_bar"
+elif [[ $sig -lt -50 ]]; then
+  echo "network_wifi"
+elif [[ $sig -lt 0 ]]; then
+  echo "signal_wifi_4_bar"
+else
+  echo "signal_wifi_bad"
+fi
