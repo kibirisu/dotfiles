@@ -10,9 +10,12 @@ vim.wo.number = true
 vim.wo.relativenumber = true
 vim.o.clipboard = "unnamedplus"
 
+vim.opt.termguicolors = true
+
 -- nvim.tree
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 require("lazy").setup("plugins")
+vim.cmd.colorscheme('catppuccin-mocha')
 require("telescope").load_extension "file_browser"
