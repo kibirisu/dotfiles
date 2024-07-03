@@ -5,6 +5,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     "hrsh7th/nvim-cmp",
     "hrsh7th/cmp-nvim-lsp",
+    "L3MON4D3/LuaSnip",
   },
   config = function()
     local capabilities = vim.tbl_deep_extend("force", vim.lsp.protocol.make_client_capabilities(), require('cmp_nvim_lsp').default_capabilities())
@@ -24,5 +25,6 @@ return {
         },
       },
     })
+    require("cmp").setup()
   end
 }
