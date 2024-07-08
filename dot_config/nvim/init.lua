@@ -22,7 +22,6 @@ vim.opt.termguicolors = true
 
 require("lazy").setup("plugins")
 vim.cmd.colorscheme('catppuccin-mocha')
-require("telescope").load_extension "file_browser"
 vim.filetype.add({
     pattern = { [".*/hypr/.*%.conf"] = "hyprlang" },
 })
