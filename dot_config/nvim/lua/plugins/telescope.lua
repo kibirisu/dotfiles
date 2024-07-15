@@ -15,7 +15,7 @@ return {
         config = function ()
             require("telescope").load_extension("file_browser")
             vim.keymap.set('n', '<leader>sa', ":Telescope file_browser<CR>")
-            vim.keymap.set('n', '<leader>ss', ":Telescope file_browser path=%:p:h select_buffer=true<CR>")
+            vim.keymap.set('n', '<leader>sh', ":Telescope file_browser path=%:p:h select_buffer=true<CR>")
         end,
     },
 }
